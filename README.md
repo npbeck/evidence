@@ -24,3 +24,6 @@ using the `experiments/embeddings.py` library as well as the `experiments/embedd
 Having generated the respective embeddings you could then move on to training a model with them. `experiments/log_reg.py` 
 and its respective script provide you with a way of training a logistic regression, while `experiments/mlp.py` and its respective
 script allow you to train a simple multilayer perceptron.
+
+# Further remarks
+This repository is a copy of the original repository which at this point (Aug 25, 2020) remains private and in development. Sensitive data such as the training data sets and pretrained models was removed prior to this repository being uploaded.
