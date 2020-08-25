@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Evidence Annotator</title>
+    <!-- include vue.js development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!-- link to our CSS file -->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/main_page.css') }}">
+</head>
+<body>
+<div class="root">
+
+    <div class="top_menu">
+
+        <div class="top" id="lemma_display" title="currently selected lemma" style="font-size: x-large">
+            Lemma: <b>[[lemma]]</b>
+        </div>
+        <div class="search_options">
+            <input type="text" placeholder="Enter a lemma..." id="search_field">
+            <button id="search_button" onclick="run_search()" title="search for examples sentences">Search</button>
+        </div>
+
+        <div class="save">
+            <input type="image" src="static/save_icon.png" title="save current choice of sentences" alt="save">
+        </div>
+    </div>
+
+
+
+    <div class="center_lists">
+        <div class="list" id="example_queue" >
+            <h2 title="sentences containing the lemma you specified">[[title]]</h2>
+                <div class="sentence_container" v-for="sentence in sentences">
+                    [[highlight_lemma(sentence.text)]]
+                    <div class="sentence_container_button">
+                        <button v-on:click="remove_from_example_queue(sentence)" title="remove from example queue">-</button>
+                    </div>
+
+                    <div class="sentence_container_button">
+                        <button v-on:click="shift_to_selected_examples(sentence)" title="move to selected examples">+</button>
+                    </div>
+                </div>
+        </div>
+
+        <div class="list" id="selected_examples">
+            <h2 title="sentences that you selected">[[title]]</h2>
+                <div class="sentence_container" v-for="sentence in sentences">
+                    [[highlight_lemma(sentence.text)]]
+                    <div class="sentence_container_button">
+                        <button v-on:click="shift_to_example_queue(sentence)" title="move back to example queue">-</button>
+                    </div>
+                    <div class="sentence_container_button">
+                        <input type="image" src="static/refine_icon.png" title="show refinement options" alt="refine" v-on:click="alert('TODO show refinement options')">
+                    </div>
+
+                </div>
+        </div>
+
+        <div class="list" id="refinement_options">
+            <h2 title="options for refining an individual already selected sentence">refinement options</h2>
+        </div>
+    </div>
+
+
+
+    <div class="bottom_menu">
+
+        <div class="bottom">
+
+            <div class="slider_text"> Ratio 50:50</div>
+            <div class="slider_text">goodness</div>
+            <div class="slider_div">
+                <input class="slider" type="range" min="1" max="100" value="50">
+            </div>
+            <div class="slider_text">diversity</div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    // vue objects attaching to the three lists
+    let example_queue = new Vue({
+        el: '#example_queue',
+        data: {
+            title: 'example queue',
+            sentences: [
+                {text: 'Sogar die Raben und Krähen verhielten sich still, getäuscht von dem flüchtigen Frieden dieses Tages und also ohne Hoffnung auf das erwartete _&Aas&_.\n'},
+                {text: 'Und die Mutter läßt ihn raus, streckt das _&Aas&_ die Zunge raus.\n'},
+                {text: 'Alle anderen wurden durch Berührung mit dem _&Aas&_ "unehrlich".\n'},
+                {text: 'Die Löwen und die Geier, die Hyänen und die Hyänenhunde hatten ein übermütig sattes Leben, denn überall roch es verlockend nach _&Aas&_, und wo sie nur hinsahen, schwankten hilflose Gestalten einher.\n'},
+                {text: 'Sogar die Raben und Krähen verhielten sich still, getäuscht von dem flüchtigen Frieden dieses Tages und also ohne Hoffnung auf das erwartete _&Aas&_.\n'},
+                {text: 'Und die Mutter läßt ihn raus, streckt das _&Aas&_ die Zunge raus.\n'},
+                {text: 'Alle anderen wurden durch Berührung mit dem _&Aas&_ "unehrlich".\n'},
+                {text: 'Die Löwen und die Geier, die Hyänen und die Hyänenhunde hatten ein übermütig sattes Leben, denn überall roch es verlockend nach _&Aas&_, und wo sie nur hinsahen, schwankten hilflose Gestalten einher.\n'}
+            ],
+        },
+        delimiters: ['[[', ']]']
+    });
+
+    let selected_examples = new Vue({
+        el: '#selected_examples',
+        data: {
+            title: 'selected examples',
+            sentences: []
+        },
+        delimiters: ['[[', ']]']
+    });
+
+    let lemma_display = new Vue({
+       el: '#lemma_display',
+       data: {
+           lemma: ''
+       },
+        delimiters: ['[[', ']]']
+    });
+
+    /**
+     * move a given sentence from the example queue to the selected examples list
+     * @param sentence the sentence object
+     */
+    function shift_to_selected_examples(sentence) {
+        selected_examples.sentences.push(sentence)
+        remove_from_example_queue(sentence)
+    }
+
+    /**
+     * move a given sentence from the selected examples list "back" to the example queue
+     * @param sentence the sentence object
+     */
+    function shift_to_example_queue(sentence) {
+        example_queue.sentences.push(sentence)
+        selected_examples.sentences.splice(selected_examples.sentences.indexOf(sentence), 1) // remove sentence from selected sentences
+
+    }
+
+    /**
+     * remove a given sentence entirely from the example queue
+     * @param sentence the sentence object
+     */
+    function remove_from_example_queue(sentence) {
+        example_queue.sentences.splice(example_queue.sentences.indexOf(sentence), 1) // remove sentence from the example queue
+    }
+
+    /**
+     * highlight the lemma (i.e. the word for which sentences are needed) in these sentences
+     * @param text a string representing a sentence
+     * @returns {string} the sentence, now with HTML tags marking the lemma as bold
+     */
+    function highlight_lemma(text) {
+        text = text.replace('_&', '<b>')
+        text = text.replace('&_', '</b>')
+        return text
+    }
+
+    /**
+     * search for fitting example sentences for the lemma in the searchbox
+     */
+    function run_search() {
+        let search_field = document.getElementById('search_field')
+        lemma_display.lemma = search_field.value
+        search_field.value = ''
+
+    }
+
+    /**
+     * make pressing the enter key in the search box trigger the search button
+     */
+    let search_field = document.getElementById('search_field')
+    search_field.addEventListener('keyup', function (event) {
+        if (event.code === 'Enter'){
+            event.preventDefault();
+            document.getElementById('search_button').click();
+        }
+
+    })
+</script>
+
+</body>
+</html>

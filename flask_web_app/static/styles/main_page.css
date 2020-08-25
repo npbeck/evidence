@@ -1,0 +1,92 @@
+h2 {text-align: center;}
+
+.root{
+    display: flex;
+    flex-direction: column;
+}
+
+.top_menu{
+    display: flex;
+    flex-direction: row;
+    background-color: #F1684E;
+}
+
+.search_options{
+    margin: 15px;
+    border: 2px solid #1B1B1B;
+    background-color: white;
+    padding: 0.5em;
+}
+
+.center_lists{
+    display: flex;
+    flex-direction: row;
+    background-color: #F1684E;
+}
+
+.bottom_menu{
+    background-color: #F1684E;
+}
+
+
+.top{
+    margin: 15px;
+    border: 2px solid #1B1B1B;
+    background-color: white;
+    padding: 0.5em;
+    flex: 1;
+}
+
+.save{
+    margin: 15px;
+    border: 2px solid #1B1B1B;
+    background-color: white;
+    padding: 0.5em;
+}
+
+.list{
+    margin: 15px;
+    border: 2px solid #1B1B1B;
+    background-color: white;
+    padding: 0.5em;
+    height: 700px;
+    width: 33%;
+    overflow: scroll;
+
+}
+
+.bottom{
+    display: flex;
+    flex-direction: row;
+}
+
+.slider{
+    width: 100%;
+}
+
+.slider_div{
+    flex-grow: 1;
+    margin: 15px;
+    padding: 0.5em;
+    border: 2px solid #1B1B1B;
+    background-color: white;
+}
+
+.slider_text{
+    flex-grow: unset;
+    margin: 15px;
+    border: 2px solid #1B1B1B;
+    background-color: white;
+    padding: 0.5em;
+}
+
+.sentence_container{
+    display: flex;
+    background: antiquewhite;
+    margin: 10px;
+    padding: 10px;
+}
+
+.sentence_container_button{
+    padding: 5px;
+}
